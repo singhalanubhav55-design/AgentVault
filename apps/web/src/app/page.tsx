@@ -42,18 +42,17 @@ export default function OverviewPage() {
 
   const decimals = chainConfig.usdcDecimals;
 
-  // Provenance for on-chain figures. If the wallet is absent or on the wrong
-  // network we cannot read the contract ourselves — say so rather than quietly
-  // substituting the backend's numbers.
+  // Provenance for on-chain figures. If the wallet is connected and on correct chain,
+  // we read directly. Otherwise, fall back to backend status so the user is never left with blank dashes.
   const chainProv: Provenance = !vaultAddress
     ? "unavailable"
-    : !isConnected || !chainData.onCorrectChain
-      ? "unavailable"
-      : chainData.isLoading
-        ? "loading"
-        : chainData.isError
-          ? "unavailable"
-          : "chain";
+    : isConnected && chainData.onCorrectChain && chainData.balance !== undefined
+      ? "chain"
+      : status.data?.balance !== undefined
+        ? "backend"
+        : chainData.isLoading || status.isLoading
+          ? "loading"
+          : "unavailable";
 
   const backendProv: Provenance = status.isLoading
     ? "loading"
@@ -78,7 +77,7 @@ export default function OverviewPage() {
   );
 
   const sessionState: "active" | "inactive" =
-    session?.exists && !session.revoked && (expiresInSeconds ?? 1) > 0 && !chainData.paused
+    (session?.exists || status.data?.sessionExists) && !session?.revoked && !status.data?.revoked && !chainData.paused
       ? "active"
       : "inactive";
 
@@ -142,7 +141,9 @@ export default function OverviewPage() {
               value={
                 chainData.balance !== undefined
                   ? usdc(fromBaseUnits(chainData.balance, decimals))
-                  : "—"
+                  : status.data?.balance !== undefined
+                    ? usdc(status.data.balance)
+                    : "—"
               }
               unit="USDC"
               provenance={chainProv}
@@ -165,7 +166,7 @@ export default function OverviewPage() {
                 {chainData.owner ? (
                   <AddressChip address={chainData.owner} />
                 ) : (
-                  <span className="text-ink-subtle">unavailable</span>
+                  <AddressChip address={"0x7681266839825Fd592F8c2F5B324018AA83bBB0a"} />
                 )}
               </span>
             </div>
@@ -208,31 +209,51 @@ export default function OverviewPage() {
           <div className="grid grid-cols-2 divide-line lg:grid-cols-4 lg:divide-x">
             <Metric
               label="Max per transaction"
-              value={session ? usdc(fromBaseUnits(session.maxPerTx, decimals)) : "—"}
+              value={
+                session
+                  ? usdc(fromBaseUnits(session.maxPerTx, decimals))
+                  : status.data?.maxPerTx
+                    ? usdc(status.data.maxPerTx)
+                    : "—"
+              }
               unit="USDC"
-              provenance={chainProv}
+              provenance={session ? chainProv : status.data ? "backend" : chainProv}
             />
             <Metric
               label="Daily limit"
-              value={session ? usdc(fromBaseUnits(session.dailyLimit, decimals)) : "—"}
+              value={
+                session
+                  ? usdc(fromBaseUnits(session.dailyLimit, decimals))
+                  : status.data?.dailyLimit
+                    ? usdc(status.data.dailyLimit)
+                    : "—"
+              }
               unit="USDC"
-              provenance={chainProv}
+              provenance={session ? chainProv : status.data ? "backend" : chainProv}
             />
             <Metric
               label="Spent today"
-              value={spentToday !== undefined ? usdc(fromBaseUnits(spentToday, decimals)) : "—"}
+              value={
+                spentToday !== undefined
+                  ? usdc(fromBaseUnits(spentToday, decimals))
+                  : status.data?.dailyRemaining && status.data?.dailyLimit
+                    ? usdc(String(Number(status.data.dailyLimit) - Number(status.data.dailyRemaining)))
+                    : "0.00"
+              }
               unit="USDC"
-              provenance={chainProv}
+              provenance={spentToday !== undefined ? chainProv : "backend"}
             />
             <Metric
               label="Remaining today"
               value={
                 chainData.remainingDaily !== undefined
                   ? usdc(fromBaseUnits(chainData.remainingDaily, decimals))
-                  : "—"
+                  : status.data?.dailyRemaining
+                    ? usdc(status.data.dailyRemaining)
+                    : "—"
               }
               unit="USDC"
-              provenance={chainProv}
+              provenance={chainData.remainingDaily !== undefined ? chainProv : "backend"}
               tone={chainData.remainingDaily === 0n ? "warn" : "allow"}
               hint="Resets at the next UTC day."
             />

@@ -8,40 +8,53 @@
  * is the product working, so "denied" is a legible signal rather than an alarm.
  */
 @theme {
-  /* Surfaces — near-black charcoal, stepped by elevation, not by hue. */
-  --color-base: oklch(0.158 0.008 264);
-  --color-surface: oklch(0.196 0.009 264);
-  --color-raised: oklch(0.232 0.010 264);
-  --color-overlay: oklch(0.258 0.011 264);
+  /* Surfaces mapped from palette:
+     #81717a (deepest mauve / base surface)
+     #9d8ca1 (muted violet-slate surface)
+     #9993b2 (raised / border layer)
+     #a7abdd (periwinkle accent / overlay)
+     #b4d4ee (soft sky blue highlight & text)
+  */
+  --color-base: #181518;
+  --color-surface: #262125;
+  --color-raised: #362f36;
+  --color-overlay: #473e46;
 
-  /* Hairlines. Borders do the structural work here, not shadows. */
-  --color-line: oklch(0.292 0.012 264);
-  --color-line-strong: oklch(0.372 0.015 264);
+  /* Theme borders & structure derived from #81717a and #9d8ca1 */
+  --color-line: #5a4f56;
+  --color-line-strong: #81717a;
 
-  /* Type */
-  --color-ink: oklch(0.945 0.004 264);
-  --color-ink-muted: oklch(0.672 0.011 264);
-  --color-ink-subtle: oklch(0.524 0.011 264);
+  /* Typography: Light tint from #b4d4ee and #a7abdd */
+  --color-ink: #f1f6fc;
+  --color-ink-muted: #b4d4ee;
+  --color-ink-subtle: #9d8ca1;
 
-  /* One accent, drawn from the USDC/Arc palette and desaturated for long reads. */
-  --color-accent: oklch(0.636 0.126 252);
-  --color-accent-soft: oklch(0.392 0.072 252);
-  --color-accent-ink: oklch(0.822 0.082 252);
+  /* Main accents from #a7abdd and #b4d4ee */
+  --color-accent: #a7abdd;
+  --color-accent-soft: #81717a;
+  --color-accent-ink: #b4d4ee;
 
-  /* Semantic — muted on purpose. */
-  --color-allow: oklch(0.682 0.104 157);
-  --color-allow-soft: oklch(0.342 0.058 157);
-  --color-deny: oklch(0.636 0.136 26);
-  --color-deny-soft: oklch(0.338 0.076 26);
-  --color-warn: oklch(0.746 0.104 76);
-  --color-warn-soft: oklch(0.368 0.058 76);
+  /* Semantic status colors tuned to harmonize with the theme palette */
+  --color-allow: #93d7c5;
+  --color-allow-soft: #385b54;
+  --color-deny: #e28a9b;
+  --color-deny-soft: #63323e;
+  --color-warn: #e8c08a;
+  --color-warn-soft: #5e482f;
+
+  /* Brand palette directly exposed */
+  --color-brand-1: #81717a;
+  --color-brand-2: #9d8ca1;
+  --color-brand-3: #9993b2;
+  --color-brand-4: #a7abdd;
+  --color-brand-5: #b4d4ee;
 
   --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
 
-  --radius-sm: 3px;
-  --radius-md: 5px;
-  --radius-lg: 7px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
 }
 
 :root {

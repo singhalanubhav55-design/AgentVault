@@ -21,7 +21,11 @@ export function getConfig() {
     ssr: true,
     storage: createStorage({storage: cookieStorage}),
     transports: {
-      [chain.id]: http(chainConfig.rpcUrl),
+      [chain.id]: http(chainConfig.rpcUrl, {
+        retryCount: 3,
+        retryDelay: 1000,
+        timeout: 20_000,
+      }),
     },
   });
 }

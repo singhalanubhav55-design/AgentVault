@@ -109,8 +109,13 @@ export function createSessionSigner(
   const chain = arcChain(config);
   const account = privateKeyToAccount(privateKey);
 
-  const publicClient: PublicClient = createPublicClient({chain, transport: http(config.rpcUrl)});
-  const walletClient = createWalletClient({account, chain, transport: http(config.rpcUrl)});
+  const transport = http(config.rpcUrl, {
+    retryCount: 3,
+    retryDelay: 1000,
+    timeout: 20_000,
+  });
+  const publicClient: PublicClient = createPublicClient({chain, transport});
+  const walletClient = createWalletClient({account, chain, transport});
 
   return {
     address: account.address,

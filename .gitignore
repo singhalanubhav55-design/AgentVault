@@ -21,6 +21,7 @@ build/
 contracts/out/
 contracts/cache/
 contracts/broadcast/
+contracts/*.json
 # contracts/lib is NOT ignored: forge-std is a git submodule and its gitlink
 # must stay tracked, or a fresh clone cannot build. Clone with --recursive, or
 # run `git submodule update --init --recursive`.

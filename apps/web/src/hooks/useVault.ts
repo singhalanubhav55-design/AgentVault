@@ -43,9 +43,9 @@ export interface VaultChainData {
 }
 
 export function useVaultChainData(sessionKey: Address | undefined): VaultChainData {
-  const {chain} = useAccount();
-  const onCorrectChain = chain?.id === chainConfig.chainId;
-  const enabled = Boolean(vaultAddress) && onCorrectChain;
+  const {chain, isConnected} = useAccount();
+  const onCorrectChain = !isConnected || chain?.id === chainConfig.chainId;
+  const enabled = Boolean(vaultAddress);
 
   // A fixed-length tuple so wagmi can infer each result's type. When no session
   // key is known yet the last two calls read the zero address, which returns an
@@ -58,7 +58,7 @@ export function useVaultChainData(sessionKey: Address | undefined): VaultChainDa
     contracts: [
       {address: vault, abi: agentVaultAbi, functionName: "owner"},
       {address: vault, abi: agentVaultAbi, functionName: "paused"},
-      {address: vault, abi: agentVaultAbi, functionName: "usdc"},
+      {address: vault, abi: agentVaultAbi, functionName: "USDC"},
       {
         address: chainConfig.usdcAddress,
         abi: erc20Abi,
@@ -146,9 +146,9 @@ export function useRecipientApprovals(
   sessionKey: Address | undefined,
   recipients: Address[],
 ): RecipientApprovals {
-  const {chain} = useAccount();
+  const {chain, isConnected} = useAccount();
   const enabled =
-    Boolean(vaultAddress) && Boolean(sessionKey) && recipients.length > 0 && chain?.id === chainConfig.chainId;
+    Boolean(vaultAddress) && Boolean(sessionKey) && recipients.length > 0;
 
   const query = useReadContracts({
     allowFailure: true,
